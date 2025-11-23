@@ -1,16 +1,20 @@
 import express from 'express';
 import morgan from 'morgan';
-const app = express();
-
-
+import userRoutes from './routes/user.routes.js';
 import connectDB from './db/db.js'; 
 
-connectDB();
+const app = express();
 
-
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+
+// Database connection
+connectDB();
+
+// Routes
+app.use('/api/users', userRoutes);
 
 
 app.get('/', (req, res) => {
