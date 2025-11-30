@@ -51,3 +51,25 @@ export const loginUserController = async (req, res) => {
         res.status(500).json({ error: error.message });
     }   
 };
+
+export const profileController = async (req, res) => {
+    console.log('Profile controller accessed - User:', req.user);
+    console.log('Headers:', req.headers);
+    console.log('Cookies:', req.cookies);
+    
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized - No user in request" });
+    }
+    
+    try {
+        const user = await User.findById(req.user._id);
+        
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
