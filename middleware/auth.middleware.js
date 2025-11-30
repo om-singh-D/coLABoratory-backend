@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
+import redisClient from "../services/redis.service.js";
 
-
-export const authUser = (req, res, next) => {
+export const authUser = async (req, res, next) => {
     console.log('=== AUTH MIDDLEWARE EXECUTING ===');
     try {
         // Prefer Authorization header over cookies
@@ -22,6 +22,14 @@ export const authUser = (req, res, next) => {
             return res.status(401).json({ error: "Unauthorized - No token provided" });
         }
         
+        const isBlacklisted = await redisClient.get(token);
+        if (isBlacklisted) {
+            res.cookie()
+            
+            console.log('Token is blacklisted:', token);
+            return res.status(401).json({ error: "Unauthorized - Token is blacklisted" });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log('Decoded token:', decoded);
         req.user = decoded;

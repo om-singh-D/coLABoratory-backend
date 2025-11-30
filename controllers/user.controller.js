@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import { createUser } from "../services/user.service.js";
 import { validationResult } from "express-validator";
-
+import redisClient from "../services/redis.service.js";
 
 
 export const createUserController = async (req, res) => {
@@ -69,6 +69,21 @@ export const profileController = async (req, res) => {
         }
         
         res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const logoutUserController = async (req, res) => {
+    try {
+        const token = req.headers.authorization || req.cookies.token;
+
+        redisClient.set(token, 'blacklisted', 'EX', 3600, (err) => {
+            if (err) {
+                return res.status(500).json({ error: "Could not blacklist token" });
+            }
+            res.status(200).json({ message: "Logout successful" });
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
