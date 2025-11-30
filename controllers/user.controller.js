@@ -21,3 +21,33 @@ export const createUserController = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const loginUserController = async (req, res) => {
+    const error = validationResult(req);
+
+    if (!error.isEmpty()) {
+        return res.status(400).json({ errors: error.array() });
+    }
+
+    try{
+        const { email, password } = req.body;
+        const user =await User.findOne({email}).select('+password');
+
+        if(!user){
+            return res.status(400).json({ error: "Invalid email" });
+        }
+
+        const isMatch = await user.isValidPassword(password);
+
+        if(!isMatch){
+            return res.status(400).json({ error: "Invalid password" });
+        }
+        
+        console.log('Login successful - Password:', password);
+        
+        const token = user.generateAuthToken();
+        res.status(200).json({ user, token });
+    }catch(error){
+        res.status(500).json({ error: error.message });
+    }   
+};
