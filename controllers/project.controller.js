@@ -22,3 +22,40 @@ export const createProject = async (req, res) => {
         res.status(500).json({ error: error.message });
     }   
 }
+
+export const getAllProjects = async (req, res) => {
+    try{
+        const logggedInUser=await User.findOne({ email: req.user.email });
+
+        const allUserProjects = await projectService.getAllProjectByUserId(logggedInUser._id);
+
+        return res.status(200).json({
+            projects: allUserProjects
+        });
+
+    }catch(error){
+        console.error('Error fetching projects:', error);
+        res.status(400).json({ error: error.message });
+    }
+}
+
+export const addUsersToProject = async (req, res) => {
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try{
+        const { users, projectId } = req.body;
+
+        const logggedInUser=await User.findById(req.user._id);
+
+        const updatedProject = await projectService.addUsersToProject(projectId, users, logggedInUser._id);
+
+        return res.status(200).json({ project: updatedProject });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({error: error.message});
+    }
+}
