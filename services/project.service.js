@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import projectModel from "../models/project.model.js";
 
 export const createProject = async ({ name, users }) => {
@@ -73,3 +74,17 @@ export const addUsersToProject = async (projectId, users, userId) => {
     
     return updatedProject;
 }; 
+
+export const getProjectById = async (projectId) =>{
+    if(!projectId){
+        throw new Error("Project ID is required");
+    }
+    if(!mongoose.Types.ObjectId.isValid(projectId)){
+        throw new Error("Invalid project ID");
+    }
+    const project = await projectModel.findOne({_id: projectId}).populate('users');
+    if(!project){
+        throw new Error("Project not found");
+    }
+    return project;
+}
