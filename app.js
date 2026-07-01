@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 const app = express();
 import cors from 'cors';
 import projectRoutes from './routes/project.route.js';
+import aiRoutes from './routes/ai.routes.js';
 
 
 // Middleware
@@ -20,6 +21,7 @@ connectDB();
 // Routes
 app.use('/users', userRoutes);
 app.use('/projects', projectRoutes);
+app.use('/ai', aiRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
