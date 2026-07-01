@@ -74,6 +74,15 @@ io.on('connection', socket => {
     }
   })
 
+  socket.on('project-update-file-tree', async ({ fileTree }) => {
+    socket.broadcast.to(socket.project._id.toString()).emit('project-update-file-tree', { fileTree });
+    try {
+      await projectModel.findByIdAndUpdate(socket.project._id, { fileTree });
+    } catch (error) {
+      console.error("Failed to update file tree:", error);
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
     socket.leave(socket.project._id.toString());
