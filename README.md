@@ -44,3 +44,7 @@ This is the backend architecture for the coLABoratory real-time web IDE. It powe
 
 - **AI Controller Logic**: The AI controllers are specifically engineered to handle potential formatting errors from the LLM. If the AI returns markdown blocks despite instructions, the backend safely strips and parses the JSON before returning the updated file tree to the client.
 - **Modular Design**: The codebase follows a clean Controller-Service-Route architecture for maintainability and separation of concerns.
+
+---
+
+**Developed by [@om-singh-D](https://github.com/om-singh-D)**
