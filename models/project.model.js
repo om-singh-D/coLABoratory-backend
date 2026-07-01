@@ -13,6 +13,22 @@ const projectSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
         }
+    ],
+    messages: [
+        {
+            text: {
+                type: String,
+                required: true
+            },
+            sender: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }
     ]
 })
 

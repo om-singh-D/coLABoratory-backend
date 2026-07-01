@@ -49,14 +49,29 @@ io.use(async (socket, next) => {
 io.on('connection', socket => {
   console.log('a user connected');
 
-  socket.join(socket.project._id);
+  socket.join(socket.project._id.toString());
 
   socket.on('event', data => {
     /* … */
   });
 
-  socket.on('project-message', data => {
-    socket.broadcast.to(socket.project._id).emit('project-message', data);
+  socket.on('project-message', async data => {
+    // Broadcast to other users
+    socket.broadcast.to(socket.project._id.toString()).emit('project-message', data);
+
+    // Save to database
+    try {
+      const project = await projectModel.findById(socket.project._id);
+      if (project) {
+        project.messages.push({
+          text: data.text,
+          sender: data.sender
+        });
+        await project.save();
+      }
+    } catch (error) {
+      console.error("Failed to save message to database:", error);
+    }
   })
 
   socket.on('disconnect', () => {
