@@ -26,7 +26,7 @@ export const getAgentResult = async (req, res) => {
 
         const agentContext = `
 You are an expert software engineer agent. 
-You are given a prompt and the current file tree of a project.
+You are given a prompt and the current file tree of a project in the exact format required by WebContainers (FileSystemTree).
 Your task is to follow the instructions in the prompt and modify the files accordingly.
 
 Here is the current file tree (JSON format):
@@ -36,7 +36,25 @@ User Prompt: ${prompt}
 
 IMPORTANT: You MUST return ONLY a valid JSON object representing the UPDATED file tree. 
 Do not wrap it in markdown backticks. Do not include any explanations. Just the JSON object.
-Format it identically to the input file tree: { "path/to/file.js": { "file": { "contents": "..." } } }
+Format it EXACTLY according to the WebContainer FileSystemTree structure. 
+CRITICAL RULE: Keys in the JSON object MUST NOT contain slashes ("/"). Directories must be represented as nested objects with a "directory" key.
+
+For example, a file at "src/routes/index.js" MUST be structured like this:
+{
+  "src": {
+    "directory": {
+      "routes": {
+        "directory": {
+          "index.js": {
+            "file": {
+              "contents": "..."
+            }
+          }
+        }
+      }
+    }
+  }
+}
 `;
 
         const result = await aiService.generateResult(agentContext);
