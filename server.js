@@ -9,10 +9,15 @@ import projectModel from './models/project.model.js';
 
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : ['http://localhost:5173'];
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*' // Allow all origins for now, you can restrict this later
+    origin: allowedOrigins,
+    credentials: true,
   }
 });
 
